@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Behavior over time graph</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&display=swap');
+
+    :root {
+      --color-neutral: #78909C;
+      --label-font: 'Amatic SC';
+      --label-size: 25px;
+      --label-color: var(--color-neutral);
+    }
+
+    button,
+    body,
+    input {
+      font-family: 'Amatic SC';
+      font-size: 25px;
+    }
+
+    div#share {
+      display: flex;
+      justify-content: space-between;
+      padding-bottom: 10px;
+    }
+
+    button {
+      padding: 0 15px;
+    }
+
+    html {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      margin: 0;
+      box-sizing: border-box;
+      padding: 40px;
+      height: 100vh;
+      overscroll-behavior: none;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #graph {
+      flex: 1;
+      display: flex;
+      padding-bottom: 40px;
+    }
+
+    input {
+      border: 1px solid white;
+      box-sizing: border-box;
+      font-size: 50px;
+      text-align: center;
+    }
+
+    input:hover,
+    input:focus,
+    input:focus-visible {
+      border: 1px solid #78909C;
+    }
+
+    botg-element {
+      flex: 1;
+    }
+
+  </style>
+  <script type="module" src="botg-element.js"></script>
+  <script type="module" src="graph-label.js"></script>
+</head>
+
+<body>
+  <div id="share">
+    <span><button>share</button> (copies to clipboard)</span>
+    <a href="https://glazkov.com/2022/01/26/behavior-over-time-graphing-tool/">what is this?</a>
+  </div>
+  <input type="text" value="Behavior over time graph">
+  <div id="graph">
+    <botg-element>
+      <graph-label slot="vertical-top" title="better" rotate="90"></graph-label>
+      <graph-label slot="vertical-bottom" title="worse" rotate="90"></graph-label>
+      <graph-label slot="horizontal" title="time"></graph-label>
+    </botg-element>
+  </div>
+  <script>
+    const params = new URL(window.location).searchParams;
+    document.querySelector('botg-element').setAttribute('data', params.get('g'));
+
+    const title = params.get('t');
+    if (title && title.length) {
+      document.querySelector('input').value = title;
+      document.title = title;
+    }
+
+    document.querySelector('button').addEventListener('click', () => {
+      const url = new URL(window.location);
+
+      const g = document.querySelector('botg-element').getAttribute('data');
+      url.searchParams.set('g', g);
+
+      const title = document.querySelector('input').value;
+      url.searchParams.set('t', title);
+      document.title = title;
+
+      history.pushState({}, '', url);
+      navigator.clipboard.writeText(url);
+    });
+  </script>
+</body>
+
+</html>
